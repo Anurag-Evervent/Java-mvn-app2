@@ -1,31 +1,30 @@
 pipeline {
-    agent { label 'sa-javaslave' }
-
-    tools {
+    agent {label 'slave_2'}
+    
+     tools {
         // Install the Maven version configured as "M3" and add it to the path.
-        maven "slave_maven"
+        maven "maven-3.6.3"
     }
 
     stages {
         stage('SCM Checkout') {
             steps {
-                echo 'Checkout Src from github repo'
-		git 'https://github.com/LoksaiETA/Java-mvn-app2.git'
+                echo 'Hello World'
+                git 'https://github.com/Anurag-Evervent/Java-mvn-app2.git'
             }
         }
-        stage('Maven Build') {
+        stage('Build') {
             steps {
-                echo 'Perform Maven Build'
-                // Run Maven on a Unix agent.
+                echo 'Perform appliction build'
+                // Run Maven on a selve agent.
                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
-        }
-        stage('Deploy to QA Server') {
+        }  
+        stage('Deploy to QA server') {
             steps {
-		script {
-		sshPublisher(publishers: [sshPublisherDesc(configName: 'QA_Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
-		}
-        }
-	}
+                echo 'Deploy to QA'
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'QA_Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: 'target/', sourceFiles: 'target/mvn-hello-world.war')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+            }
+        }  
     }
 }
